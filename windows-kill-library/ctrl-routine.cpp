@@ -130,6 +130,11 @@ namespace WindowsKillLibrary {
 
 	// TODO: a rewrite needed.
 	void CtrlRoutine::findAddressByStackBackTrace() {
+		HMODULE hModule = GetModuleHandleA("kernel32.dll");
+		if (hModule != NULL) {
+			this->address = (LPTHREAD_START_ROUTINE)GetProcAddress(hModule, "CtrlRoutine");
+		}
+		/*
 		LPVOID ctrlRoutine;
 		
 		USHORT count = CaptureStackBackTrace((ULONG)2, (ULONG)1, &ctrlRoutine, NULL);
@@ -165,5 +170,6 @@ namespace WindowsKillLibrary {
 
 		SymCleanup(hProcess);
 		this->address = (LPTHREAD_START_ROUTINE)funcCtrlRoutine;
+		*/
 	}
 }

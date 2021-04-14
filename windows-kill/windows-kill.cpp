@@ -18,6 +18,8 @@ using WindowsKillLibrary::SIGNAL_TYPE_CTRL_BREAK;
 
 int main(int argc,char *argv[])
 {
+	int exit_code = 0;
+	
 	DWORD signal_type;
 	DWORD signal_pid;
 	char* endptr;
@@ -26,7 +28,7 @@ int main(int argc,char *argv[])
 
 	if (argc == 1) {
 		cout << "Not enough argument. Use -h for help." << endl;
-		return 0;
+		return 1;
 	}
 	else if (argc == 2) {
 		if (strcmp(argv[1], "-h") == 0) {
@@ -42,7 +44,7 @@ int main(int argc,char *argv[])
 		else {
 			cout << "Not enough argument. Use -h for help." << endl;
 		}
-		return 0;
+		return 1;
 	}
 	else if (argc == 3) {
 		if (strcmp(argv[1], "-1") == 0 || strcmp(argv[1], "-SIGBREAK") == 0) {
@@ -53,14 +55,14 @@ int main(int argc,char *argv[])
 		}
 		else {
 			cout << "Signal type " << argv[1] << " not supported. Use -h for help." << endl;
-			return 0;
+			return 1;
 		}
 
 		signal_pid = strtoul(argv[2], &endptr, 10);
 
 		if ((endptr == argv[1]) || (*endptr != '\0')) {
 			cout << "Invalid pid: " << argv[2] << endl;
-			return 0;
+			return 1;
 		}
 	}
 
@@ -78,9 +80,11 @@ int main(int argc,char *argv[])
 		else {
 			cout << "InvalidArgument: windows-kill-library: " << exception.what() << endl;
 		}
+		exit_code = 1;
 	}
 	catch (const system_error& exception) {
 		cout << "SystemError " << exception.code() << ": " << exception.what() << endl;
+		exit_code = 1;
 	}
 	catch (const runtime_error& exception) {
 		if (strcmp(exception.what(), "EPERM") == 0) {
@@ -89,11 +93,13 @@ int main(int argc,char *argv[])
 		else {
 			cout << "RuntimeError: windows-kill-library: " << exception.what() << endl;
 		}
+		exit_code = 1;
 	}
 	catch (const exception& exception) {
 		cout << "Error: windows-kill-library: " << exception.what() << endl;
+		exit_code = 1;
 	}
 
-    return 0;
+    return exit_code;
 }
 
